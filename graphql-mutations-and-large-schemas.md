@@ -1,10 +1,5 @@
----
-title: GraphQL Mutations & Large Schemas
-author: Aleksandar Susnjar
-date: 2021-11-17
-...
+# GraphQL Mutations & Large Schemas
 
-\newpage
 ## Important GraphQL background bits
 
 1. Queries fields can be fetched independently and concurrently, in any order 
@@ -52,7 +47,6 @@ date: 2021-11-17
    They don't "return" anything either, so any interest in their outcomes
    must be restated/duplicated in the "fetch" section - inside `{...}`.
 
-\newpage
 ## Relevant links to existing texts
 
 I found the following online:
@@ -73,7 +67,6 @@ I found the following online:
 * https://medium.com/hackernoon/graphql-nested-mutations-with-apollo-small-fatigue-max-gain-1020f627ea2e
 * https://platform.ontotext.com/tutorials/graphql-mutation.html
 
-\newpage
 ## My thoughts
 
 ### Important general background note
@@ -145,7 +138,6 @@ implementation:
 
 Note that none of these are exclusive and can easily evolve from (1) to (6).
 
-\newpage
 ### Single complex (deep, nested) mutation != batch of mutations
 
 Mutations and queries are technically the same except with respect to intent
@@ -216,7 +208,6 @@ In the above example the outcome is always:
 2. Savings account's balance goes up by 100 + (-50) = 50.
 3. The bank has 200 + (-50) = 150 more cache.
 
-\newpage
 ### When the order is needed (different case)
 
 Sure, there can be operations that demand order. But there are options
@@ -261,7 +252,6 @@ mutation {
 }
 ```
 
-\newpage
 ### When the order is not a (primary) concern
 
 What many of us are challenged by is the namespace, readability, expressivity
@@ -316,7 +306,6 @@ mutation {
 }
 ```
 
-\newpage
 ##### Notice:
 1. The "cores of" `A` and `B` mutations will themselves be done in a serial fashion.
 2. Today there are no guarantees about `B*` happening in any order
@@ -352,7 +341,6 @@ Again, for constructing complex mutations this is fine in a very large number
 of cases. We are not talking about cases where the path taken matters, only
 the destination.
 
-\newpage
 ## No specification change needed?
 
 This does not require the spec to change, it is not going against it:
@@ -401,7 +389,6 @@ This does not require the spec to change, it is not going against it:
    with complex/large schemas, though evolving supporting libraries always
    helps.
 
-\newpage
 ## "Seed ideas" for further brainstorming
 
 > **IMPORTANT**
@@ -452,7 +439,6 @@ breaking up their requests to ensure any order they feel is important.
 If the client drives this from the beginning, this is not a concern.
 Hence the next idea.
 
-\newpage
 ### Server abilities directive + client order request directive
 
 It is generally impossible to request operations to occur in parallel. This may
@@ -545,7 +531,6 @@ mutation {
 2. I've cheated and omitted the `@orderedExecution` client directive on
    `seq` fields, which makes this invalid and takes us to the next idea.
 
-\newpage
 ### Introduce explicit syntax for "order is important" blocks
 
 This is essentially making the `seq` and `par` example from the idea above
@@ -599,7 +584,6 @@ This is safe:
    order, that would be incompatible, but they would have a clear path
    to relatively easily maintain said compatibility with all clients.
    
-\newpage
 Counter-arguments:
 
 1. Takes the syntax away from something else that may need it,
@@ -623,7 +607,6 @@ Counter-arguments:
    better.
    
    
-\newpage
 ### Forget about sequences, express dependencies
 
 I'll start with an example as I think it might be the fastest way to 
@@ -667,7 +650,6 @@ The operation path may be:
 3. Have dedicated syntax / literal, perhaps dotted, would allow
    and encourage client-side validation better than strings.
 
-\newpage
 ### Why stop there? Add data flow.
 
 ```GraphQL
@@ -731,7 +713,6 @@ discussion that can be organized  separately. Please note that,
 at this point this "idea" is just a seed and an indication of 
 future possibilities.
 
-\newpage
 ### Anonymously nested queries
 
 A further progression of the previous idea allows direct nesting
@@ -769,7 +750,6 @@ possible and desirable progression from them. Directives are generally
 safe too. The syntactic extensions / sugar is likely the most
 "sensitive" change and would need to be additionally discussed.
 
-\newpage
 ## Conundrums and adjacent issues
 
 ### Should scalars remain in input arguments or be nested?
