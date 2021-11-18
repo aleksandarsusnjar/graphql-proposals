@@ -366,6 +366,15 @@ This does not require the spec to change, it is not going against it:
    chunks (because they will be entirely handled by a single server) 
    and they will themselves serialize the root-level ones.
    
+5. While this does affect `@defer` and `@stream`, it only affects the 
+   back-end implementation, not the GraphQL spec or the client. Specifically,
+   it is up to the server to decide what it takes for any particular
+   fragment or field to be ready. Query and mutation fields that do not
+   require (any further) handling "on the way out" can be sent sooner
+   than those that do (from the same scope) and are implicitly "deferred" 
+   that way. The only question that remains is whether the server is 
+   also able to send anything but a monolithic response.
+   
 ## Benefits
 
 1. Namespacing - root only contains entry points, nothing more.
