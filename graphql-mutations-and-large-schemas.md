@@ -56,6 +56,7 @@ I found the following online:
 * https://blog.logrocket.com/supporting-opt-in-nested-mutations-in-graphql/
 * https://graphql-api.com/guides/schema/using-nested-mutations/
 * https://github.com/oney/graphql-mutate
+* https://github.com/graphql/graphql-spec/issues/252
 
 ### Descriptions of the order/concurrency issue
 
@@ -476,7 +477,7 @@ server capability directive and the client-supplied non-schema directive
 can be stated on either:
 
 a) (output) type only, starting with `Mutation`
-b) field only
+b) field only - see https://github.com/graphql/graphql-spec/issues/252
 c) both of the above - types and fields
 
 I actually think/feel that (b) provides most of the power with least
@@ -532,13 +533,15 @@ mutation {
 }
 ```
 
-... but there are at least two issues with this:
+... but there are at least a few issues with this:
 
 1. This "feels" as if it does affect the scope/namespace/nesting of the
    response. GraphQL's nesting is already more than significant so, I think,
    this should be avoided.
 2. I've cheated and omitted the `@orderedExecution` client directive on
    `seq` fields, which makes this invalid and takes us to the next idea.
+3. Client directives are easily ignored. A server that could do concurrent
+   execution may end up doing it even when sequential execution is requested.
 
 ### Introduce explicit syntax for "order is important" blocks
 
@@ -585,7 +588,11 @@ This is safe:
 3. New clients, aware of this feature, will only request this from
    servers that indicate they are capable of this.
 4. The servers can, at any point, decide to add this capability.
-5. While removing the capability entirely could yield incompatibility,
+5. Servers that do not implement (or signal support for this)
+   will fail the requests as they can't parse them. This properly
+   prevents arbitrary order of execution when specific order is
+   legally requested.
+7. While removing the capability entirely could yield incompatibility,
    it is safe to keep it advertised (to maintain compatibility) while
    actually continuing to do things in sequential order only.
    Yes, if the server is reimplemented from scratch and can't parse
@@ -624,7 +631,7 @@ describe:
 ```GraphQL
 mutation {
    foo(input: $fooInput)  {
-      nested(input: $nestedInput) @dependsOn(operation = "/blah") {
+      nested(input: $nestedInput) @dependsOn(operation = $mutation.blah) {
          ...
       }
    }
@@ -652,12 +659,17 @@ It should be easy to federate too.
 
 The operation path may be:
 
-1. A string (easiest, no parser changes required) but not validated.
-2. An array such as `["blah"]`, thus not needing `/` to separate
-   elements but needing a different way to distinguish between
-   absolute and relative paths.
-3. Have dedicated syntax / literal, perhaps dotted, would allow
-   and encourage client-side validation better than strings.
+1. Dedicated syntax would ensure that servers will fail (as they should)
+   if this is requested but they don't support it. Here I used a
+   variable-like syntax but with dots in the name, presently not allowed
+   in variable names. Alternatively something else can be used, maybe
+   `$$` or following the `$` sign immediatelly with a dot `.`. 
+   While other representations can be accomplished much more easily,
+   such as using strings or lists/arrays, there would be a risk of servers
+   that don't support this feature failing to fail. Dedicated syntax
+   also allows for better client-side validation.
+2. This may evolve into supporting relative or scoped paths.
+   For example, the `mutation.` prefix may become unneeded.
 
 ### Why stop there? Add data flow.
 
@@ -665,28 +677,25 @@ The operation path may be:
 mutation {
    foo(input: $fooInput)  {
       nested(input: {
-         arg1: $"/blah/id"
+         arg1: $mutation.blah.id # Take the id from the blah output
       }) {
          ...
       }
    }
-   bar(input: $fooInput) {...}
-   blah: other(input: $fooInput) @dependsOn(operation = "bar") {
+   bar(input: $barInput) {...}
+   blah: other(input: $blahInput) @dependsOn(operation = $mutation.bar) {
        id
    }
 }
 ```
 
-Above I "abused" the `$` approach to reference variable for referencing
-outputs of other operations. Like in the previous idea, those paths may
-take multiple forms.
+> Note: resulting order: bar -> blah -> foo.
 
 While this does start to look like complex orchestration, it can help
 bring together what would otherwise have to be separate requests and 
 is rather simple. It would also reduce the need to have mutations that
 need to expose complex query inputs to find what they should be applied
-to, thus reducing the number of operations. Example (using a slightly
-different syntax for data flow to illustrate):
+to, thus reducing the number of operations. Example:
 
 ```GraphQL
 mutation {
@@ -741,15 +750,14 @@ mutation {
 ```
 
 Here I used a Groovy-like `*.` spread operator as well
-(sorry, I don't like `...`) to indicate simple mapping/extraction
-of individual fields of a collection of owner objects into
-a collection of those field values. For non-List fields
-the spread isn't needed but it is otherwise essentially all but
-required.
+to indicate simple mapping/extraction of individual fields of a
+collection of owner objects into a collection of those field values.
+For non-List fields the spread isn't needed but it is otherwise 
+essentially all but required.
 
 ### Please note
 
-Other than the second "idea" (serial types, existing proposal),
+Other than the second "idea" (a field variation on serial types, existing proposal),
 the rest fall within a single, compatible evolutionary line. In that
 sense the "serial type" looks odd and out of place, may be a potential
 dead end (although there could certainly be evolutions from there too).
