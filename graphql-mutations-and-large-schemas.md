@@ -59,7 +59,7 @@ I found the following online:
 * https://github.com/graphql/graphql-spec/issues/252
 * https://graphql-api.com/blog/released-graphql-api-v07-with-mutations-and-nested-mutations/
 * https://github.com/Shopify/graphql-design-tutorial/issues/2
-
+* https://graphql-by-pop.com/docs/operational/embeddable-fields.html
 
 ### Descriptions of the order/concurrency issue
 
@@ -753,11 +753,13 @@ mutation {
 }
 ```
 
-Here I used a Groovy-like `*.` spread operator as well
+Here I used a Groovy-like `*.` spread / flattening operator as well
 to indicate simple mapping/extraction of individual fields of a
 collection of owner objects into a collection of those field values.
 For non-List fields the spread isn't needed but it is otherwise 
-essentially all but required.
+essentially all but required. This issue, with somewhat different
+proposal is listed in 
+[Issue 174 - \[RFC\] Flat chain syntax](https://github.com/graphql/graphql-spec/issues/174).
 
 ### Please note
 
