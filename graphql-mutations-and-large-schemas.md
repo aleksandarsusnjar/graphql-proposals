@@ -56,7 +56,7 @@ I found the following online:
 * https://blog.logrocket.com/supporting-opt-in-nested-mutations-in-graphql/
 * https://graphql-api.com/guides/schema/using-nested-mutations/
 * https://github.com/oney/graphql-mutate
-* https://github.com/graphql/graphql-spec/issues/252
+* [Issue 252 - Proposal: Serial fields (nested mutations)](https://github.com/graphql/graphql-spec/issues/252)
 * https://graphql-api.com/blog/released-graphql-api-v07-with-mutations-and-nested-mutations/
 * https://github.com/Shopify/graphql-design-tutorial/issues/2
 * https://graphql-by-pop.com/docs/operational/embeddable-fields.html
@@ -481,7 +481,9 @@ server capability directive and the client-supplied non-schema directive
 can be stated on either:
 
 a) (output) type only, starting with `Mutation`
-b) field only - see https://github.com/graphql/graphql-spec/issues/252
+
+b) field only - see [Issue 252 - Proposal: Serial fields (nested mutations)](https://github.com/graphql/graphql-spec/issues/252)
+
 c) both of the above - types and fields
 
 I actually think/feel that (b) provides most of the power with least
