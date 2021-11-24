@@ -51,12 +51,15 @@
 
 I found the following online:
 
-### Propositions for nested mutations
+### Content about/with nested mutations
 
 * https://blog.logrocket.com/supporting-opt-in-nested-mutations-in-graphql/
 * https://graphql-api.com/guides/schema/using-nested-mutations/
 * https://github.com/oney/graphql-mutate
 * https://github.com/graphql/graphql-spec/issues/252
+* https://graphql-api.com/blog/released-graphql-api-v07-with-mutations-and-nested-mutations/
+* https://github.com/Shopify/graphql-design-tutorial/issues/2
+
 
 ### Descriptions of the order/concurrency issue
 
@@ -67,6 +70,7 @@ I found the following online:
 * https://hasura.io/docs/latest/graphql/core/databases/postgres/mutations/multiple-mutations.html
 * https://medium.com/hackernoon/graphql-nested-mutations-with-apollo-small-fatigue-max-gain-1020f627ea2e
 * https://platform.ontotext.com/tutorials/graphql-mutation.html
+* https://graphql-rules.com/rules/mutation-namespaces
 
 ## My thoughts
 
