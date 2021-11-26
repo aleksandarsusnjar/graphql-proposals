@@ -237,7 +237,7 @@ mutation {
 }
 ```
 
-**Complete break-up**
+**Complete break-up** (separate requests)
 ```GraphQL
 mutation M1 {
     updateCustomer(input: {id: "123"}) {
