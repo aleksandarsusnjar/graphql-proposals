@@ -239,18 +239,18 @@ mutation {
 
 **Complete break-up**
 ```GraphQL
-mutation {
+mutation M1 {
     updateCustomer(input: {id: "123"}) {
         depositToChequing(input: {amount: 200}) { balance }
     }
 }
-mutation {
+mutation M2 {
     updateCustomer(input: {id: "123"}) {
         updateChequing(input: {delta: -100}) { balance }
         updateSavings(input: {delta: 100}) { balance }
     }
 }
-mutation {
+mutation M3 {
     updateCustomer(input: {id: "123"}) {
         withdrawFromSavings(input: {amount: -50}) { balance }
     }
